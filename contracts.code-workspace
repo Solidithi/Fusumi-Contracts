@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"move-analyzer.server.path": "move-analyzer",
+		"files.associations": {
+			"*.move": "move"
+		},
+		"editor.formatOnSave": true,
+		"editor.tabSize": 4,
+		"editor.insertSpaces": true
+	},
+	"extensions": {
+		"recommendations": ["move.move-analyzer"]
+	}
+}

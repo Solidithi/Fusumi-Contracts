@@ -1,0 +1,41 @@
+# Aptos Move files
+build/
+.aptos/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Node.js (if using TypeScript SDK)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if using Python SDK)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Rust (for Rust SDK)
+target/
+Cargo.lock
+
+# Package files
+*.tar.gz
+*.zip
+*.rar

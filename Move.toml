@@ -1,0 +1,17 @@
+[package]
+name = "ye-contracts"
+version = "1.0.0"
+authors = ["Defrost <defrostlauncher.team.work@gmail.com>"]
+
+[addresses]
+ye_contracts = "_"
+
+[dev-addresses]
+ye_contracts = "0x1"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
