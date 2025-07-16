@@ -16,7 +16,7 @@ module fusumi_deployer::fusumi {
 
     /// Create product
     /// Business and product relationships are 1:n
-    public entry fun add_cargo(){
+    public entry fun load_cargo(){
 
     }
 
