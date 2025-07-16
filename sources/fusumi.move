@@ -5,12 +5,12 @@ module fusumi_deployer::fusumi {
     use std::vector;
 
     /// Add business
-    public entry fun add_ship(){
+    public entry fun anchoring_ship(){
 
     }
 
     /// Remove business
-    public entry fun remove_ship(){
+    public entry fun departing_ship(){
 
     }
 
