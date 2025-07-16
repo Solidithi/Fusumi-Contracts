@@ -1,15 +1,16 @@
 [package]
 name = "fusumi"
-version = "1.0.0"
-authors = []
+version = "0.0.1"
 
 [addresses]
-
-[dev-addresses]
+fusumi_deployer = "0x77f85a9b7343634d922850e47c1a34c9c529308ab8b1f1a850803149d95235c0"
 
 [dependencies.AptosFramework]
-git = "https://github.com/aptos-labs/aptos-framework.git"
-rev = "mainnet"
-subdir = "aptos-framework"
+git = "https://github.com/aptos-labs/aptos-core.git"
+subdir = "aptos-move/framework/aptos-framework"
+rev = "main"
 
-[dev-dependencies]
+[dependencies.AptosToken]
+git = "https://github.com/aptos-labs/aptos-core.git"
+subdir = "aptos-move/framework/aptos-token"
+rev = "main"
