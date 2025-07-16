@@ -10,7 +10,7 @@ module fusumi_deployer::fusumi_market_manager {
 
     // Global storage for NFT ownership data
     struct GlobalNFTRegistry has key {
-        nft_data: vector<common::NFTOwnershipData>,
+        
     }
 
     /// Initialize the NFT registry
