@@ -1,4 +1,5 @@
 module fusumi_deployer::fusumi {
+    use fusumi_deployer::debt_coordinator;
     use std::string::String;
     use std::option::Option;
     use std::vector;
