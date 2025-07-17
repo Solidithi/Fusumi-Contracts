@@ -5,8 +5,11 @@ module fusumi_deployer::dock{
     use std::vector;
     use aptos_framework::event;
     use aptos_framework::timestamp;
+    use fusumi_deployer::common;
     
     friend fusumi_deployer::debt_coordinator;
+    friend fusumi_deployer::stash;
+    friend fusumi_deployer:debt_root;
 
     struct Dock has key {
         ships: vector<address>,
