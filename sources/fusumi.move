@@ -47,27 +47,91 @@ module fusumi_deployer::fusumi {
     }
 
     /// Dept root is where the debt is repaid, no one own this
-    public entry fun create_debt_root(){
-
+    public entry fun create_debt_root(
+        creator: &signer,
+        root_name: String,
+        root_description: String,
+        root_uri: String,
+        total_debt_amount: u64,
+        debtor_address: address,
+        cargo_id: u64,
+    ) {
+        debt_coordinator::create_debt_root(
+            creator,
+            root_name,
+            root_description,
+            root_uri,
+            total_debt_amount,
+            debtor_address,
+            cargo_id,
+        );
     }
 
     /// This path will mint the token (NFT) that represents the debt
-    public entry fun mint_debt_token(){
-
+    public entry fun mint_debt_token(
+        creator: &signer,
+        receiver: address,
+        root_name: String,
+        shared_percentage: u64,
+        parent_token_id: Option<u64>,
+    ) {
+        debt_coordinator::mint_debt_token(
+            creator,
+            receiver,
+            root_name,
+            shared_percentage,
+            parent_token_id
+        );
     }
 
     /// Use this path to repay debt to root
-    public entry fun deposit_debt_payment(){
-
+    public entry fun deposit_debt_payment(
+        debtor: &signer,
+        collection_creator: address,
+        root_name: String,
+        payment_amount: u64,
+    ) {
+        debt_coordinator::deposit_debt_payment(
+            debtor,
+            collection_creator,
+            root_name,
+            payment_amount
+        );
     }
 
     /// Use this path to withdraw debt payment
-    public entry fun withdraw_debt_payment(){
-
+    public entry fun withdraw_debt_payment(
+        withdrawer: &signer,
+        collection_creator: address,
+        root_name: String,
+        withdrawal_amount: u64,
+    ) {
+        debt_coordinator::withdraw_debt_payment(
+            withdrawer,
+            collection_creator,
+            root_name,
+            withdrawal_amount
+        );
     }
 
     /// Use this path to mint a new token and share the ownership of the debt
-    public entry fun parting_token(){
-
+    public entry fun parting_token(
+        creator: &signer,
+        parent_nft_owner: address,
+        marketplace_address: address,
+        root_name: String,
+        parent_token_id: u64,
+        shared_percentage: u64,
+        listing_price: u64,
+    ) {
+        debt_coordinator::parting_token(
+            creator,
+            parent_nft_owner,
+            marketplace_address,
+            root_name,
+            parent_token_id,
+            shared_percentage,
+            listing_price
+        );
     }
 }
