@@ -29,6 +29,35 @@ module fusumi_deployer::fusumi_market {
         marketplace_fee_percentage: u64, // Fee percentage (e.g., 2 for 2%)
     }
 
+    #[event]
+    struct NFTListed has drop, store {
+        token_id: TokenId,
+        seller: address,
+        price: u64,
+        collection_name: String,
+        shared_percentage: u64,
+        timestamp: u64,
+    }
+
+    #[event]
+    struct NFTPurchased has drop, store {
+        token_id: TokenId,
+        seller: address,
+        buyer: address,
+        price: u64,
+        marketplace_fee: u64,
+        collection_name: String,
+        timestamp: u64,
+    }
+
+    #[event]
+    struct NFTDelisted has drop, store {
+        token_id: TokenId,
+        seller: address,
+        collection_name: String,
+        timestamp: u64,
+    }
+
     public(friend) fun initialize(account: &signer, fee_percentage: u64) {
         move_to(account, Marketplace {
             listings: table::new(),
@@ -64,7 +93,14 @@ module fusumi_deployer::fusumi_market {
             listed_timestamp: timestamp::now_seconds(),
         };
         table::add(&mut marketplace.listings, token_id, listing);
-        // TODO: emit event
+        event::emit(NFTListed {
+            token_id,
+            seller,
+            price,
+            collection_name,
+            shared_percentage,
+            timestamp: timestamp::now_seconds(),
+        });
     }
 
     public entry fun purchase_nft(
@@ -88,7 +124,15 @@ module fusumi_deployer::fusumi_market {
         coin::deposit(marketplace_address, marketplace_fee_coin);
         fusumi_nft_manager::transfer_nft_ownership(listing.seller, buyer_address, listing.collection_creator);
         token::transfer(buyer, token_id, buyer_address, 1);
-        // TODO: emit event
+        event::emit(NFTPurchased {
+            token_id,
+            seller: listing.seller,
+            buyer: buyer_address,
+            price: listing.price,
+            marketplace_fee,
+            collection_name: listing.collection_name,
+            timestamp: timestamp::now_seconds(),
+        });
     }
 
     public entry fun delist_nft(
@@ -107,7 +151,12 @@ module fusumi_deployer::fusumi_market {
         assert!(listing.seller == seller_address, error::permission_denied(0)); // TODO: custom error
         let listing = table::remove(&mut marketplace.listings, token_id);
         token::transfer(seller, token_id, seller_address, 1);
-        // TODO: emit event
+        event::emit(NFTDelisted {
+            token_id,
+            seller: seller_address,
+            collection_name: listing.collection_name,
+            timestamp: timestamp::now_seconds(),
+        });
     }
 
     public entry fun update_listing_price(
