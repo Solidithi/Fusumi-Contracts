@@ -31,7 +31,7 @@ module fusumi_deployer::common {
         cargo_type: String,
         price: u64,
         unit_of_measure: String,
-        description: Optionl<String>,
+        description: Option<String>,
         images: vector<String>,
         start_date: u64,
         end_date: u64,
