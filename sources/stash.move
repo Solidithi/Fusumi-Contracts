@@ -14,7 +14,7 @@ module fusumi_deployer::stash {
     friend fusumi_deployer::debt_root;
 
     struct Stash has key {
-        cargo: Table<u64, common:Cargo>,
+        cargo: Table<u64, common::Cargo>,
         next_cargo_id: u64,
         ship_stash: Table<address, vector<u64>>,
     }

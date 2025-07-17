@@ -224,9 +224,9 @@ module fusumi_deployer::debt_root {
             error::invalid_argument(common::max_shared_percentage_exceeded())
         );
 
-        let mut token_name = string::utf8(b"Debt Token #");
+        let token_name = string::utf8(b"Debt Token #");
         string::append(&mut token_name, string::utf8(bcs::to_bytes(&debt_root.next_token_id)));
-        let mut token_uri = string::utf8(b"https://debt-nft.com/token/");
+        let token_uri = string::utf8(b"https://debt-nft.com/token/");
         string::append(&mut token_uri, string::utf8(bcs::to_bytes(&debt_root.next_token_id)));
 
         let individual_token_data_id = token::create_tokendata(
@@ -443,7 +443,7 @@ module fusumi_deployer::debt_root {
         };
 
         // Create the token name for the newly minted token
-        let mut token_name = string::utf8(b"Debt Token #");
+        let token_name = string::utf8(b"Debt Token #");
         string::append(&mut token_name, string::utf8(bcs::to_bytes(&new_token_id)));
 
         let token_data_id = token::create_token_data_id(creator_address, root_name, token_name);

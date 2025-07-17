@@ -9,7 +9,7 @@ module fusumi_deployer::dock{
     
     friend fusumi_deployer::debt_coordinator;
     friend fusumi_deployer::stash;
-    friend fusumi_deployer:debt_root;
+    friend fusumi_deployer::debt_root;
 
     struct Dock has key {
         ships: vector<address>,

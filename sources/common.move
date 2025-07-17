@@ -20,7 +20,7 @@ module fusumi_deployer::common {
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
-        id: u64.
+        id: u64,
         ship_imo: address, // business address
         cargo_name: String,
         cargo_type: String,
