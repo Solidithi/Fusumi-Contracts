@@ -12,13 +12,26 @@ module fusumi_deployer::debt_root {
     use aptos_framework::event;
     use aptos_framework::timestamp;
     use aptos_tokens::token::{Self, TokenDataId, TokenId};
+    use fusumi_deployer::common;
     use fusumi_deployer::dock;
     use fusumi_deployer::stash;
+    use fusumi_deployer::fusumi_market_manager;
+    use fusumi_deployer::fusumi_market;
 
     friend fusumi_deployer::debt_coordinator;
 
     struct DebtRoot has store {
-
+        root_name: String,
+        total_debt_amount: u64,
+        total_paid_amount: u64,
+        debtor_address: address,
+        token_data_id: TokenDataId,
+        next_token_id: u64,
+        total_shared_percentage: u64,
+        created_at: u64,
+        debt_vault: coin::Coin<AptosCoin>,
+        withdrawn_amount: u64,
+        cargo_id: u64,
     }
 
     struct DebtRootRegistry has key {
