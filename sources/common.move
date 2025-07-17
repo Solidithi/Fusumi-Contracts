@@ -25,6 +25,17 @@ module fusumi_deployer::common {
         updated_at: u64
     }
 
+    struct NFTOwnershipData has store, drop, copy {
+        owner: address,
+        collection_creator: address,
+        shared_percentage: u64,
+        parent_token_id: Option<u64>,
+        is_root_nft: bool,
+        created_timestamp: u64,
+        token_name: String,
+        token_id: u64,
+    }
+
     // Getter for err code
     public fun cargo_alr_existed(): u64 {E_CARGO_ALR_EXISTED}
     public fun not_authorized(): u64 {E_NOT_AUTHORIZED}
@@ -43,4 +54,57 @@ module fusumi_deployer::common {
     public fun cargo_end_date(cargo: &Cargo): u64 {cargo.end_date}
     public fun cargo_created_at(cargo: &Cargo): u64 {cargo.created_at}
     public fun cargo_updated_at(cargo: &Cargo): u64 {cargo.updated_at}
+
+    // Constructor functions for structs
+    public fun new_cargo(
+        id: u64,
+        business_address: address,
+        product_name: String,
+        product_type: String,
+        price: u64,
+        unit_of_measure: String,
+        description: Option<String>,
+        images: vector<String>,
+        start_date: u64,
+        end_date: u64,
+        created_at: u64,
+        updated_at: u64,
+    ): Product {
+        Product {
+            id,
+            business_address,
+            product_name,
+            product_type,
+            price,
+            unit_of_measure,
+            description,
+            images,
+            start_date,
+            end_date,
+            created_at,
+            updated_at,
+        }
+    }
+
+    public fun new_nft_ownership_data(
+        owner: address,
+        collection_creator: address,
+        shared_percentage: u64,
+        parent_token_id: Option<u64>,
+        is_root_nft: bool,
+        created_timestamp: u64,
+        token_name: String,
+        token_id: u64,
+    ): NFTOwnershipData {
+        NFTOwnershipData {
+            owner,
+            collection_creator,
+            shared_percentage,
+            parent_token_id,
+            is_root_nft,
+            created_timestamp,
+            token_name,
+            token_id,
+        }
+    }
 }
