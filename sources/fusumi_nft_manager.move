@@ -8,6 +8,7 @@ module fusumi_deployer::fusumi_nft_manager {
 
     friend fusumi_deployer::debt_coordinator;
     friend fusumi_deployer::debt_root;
+    friend fusumi_deployer::fusumi_market_manager;
 
     // Global storage for NFT ownership data
     struct GlobalNFTRegistry has key {

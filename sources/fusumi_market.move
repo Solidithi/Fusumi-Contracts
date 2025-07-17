@@ -8,8 +8,9 @@ module fusumi_deployer::fusumi_market {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::event;
     use aptos_framework::timestamp;
-    use aptos_tokens::token::{Self, TokenDataId, TokenId};
+    use aptos_token::token::{Self, TokenDataId, TokenId};
     use fusumi_deployer::fusumi_nft_manager;
+    use fusumi_deployer::common;
 
     friend fusumi_deployer::debt_root;
 
