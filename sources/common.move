@@ -22,6 +22,12 @@ module fusumi_deployer::common {
     const E_DEBT_ROOT_ALREADY_EXISTS: u64 = 12;
     const E_NFT_NOT_LISTED: u64 = 13;
     const E_INVALID_FEE_PERCENTAGE: u64 = 14;
+    const E_NOT_MODERATOR: u64 = 15;
+    const E_SHIP_ALREADY_EXISTS: u64 = 16;
+    const E_SHIP_NOT_FOUND: u64 = 17;
+    const E_CARGO_NOT_FOUND: u64 = 18;
+    const E_NFT_NOT_FOUND: u64 = 19;
+    const E_NFT_ALREADY_LISTED: u64 = 20;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -65,6 +71,12 @@ module fusumi_deployer::common {
     public fun debt_root_already_exists(): u64 {E_DEBT_ROOT_ALREADY_EXISTS}
     public fun nft_not_listed(): u64 {E_NFT_NOT_LISTED}
     public fun invalid_fee_percentage(): u64 {E_INVALID_FEE_PERCENTAGE}
+    public fun not_moderator(): u64 {E_NOT_MODERATOR}
+    public fun ship_already_exists(): u64 {E_SHIP_ALREADY_EXISTS}
+    public fun ship_not_found(): u64 {E_SHIP_NOT_FOUND}
+    public fun cargo_not_found(): u64 {E_CARGO_NOT_FOUND}
+    public fun nft_not_found(): u64 {E_NFT_NOT_FOUND}
+    public fun nft_already_listed(): u64 {E_NFT_ALREADY_LISTED}
 
     // Getter for cargo info
     public fun cargo_id(cargo: &Cargo): u64 {cargo.id}
