@@ -30,7 +30,7 @@ module fusumi_deployer::debt_root {
         total_shared_percentage: u64,
         created_at: u64,
         debt_vault: coin::Coin<AptosCoin>,
-        withdrawn_amounts: u64,
+        withdrawn_amounts: Table<address, u64>,
         cargo_id: u64,
     }
 
@@ -167,7 +167,7 @@ module fusumi_deployer::debt_root {
         );
 
         let debt_vault = coin::zero<AptosCoin>();
-        let withdrawn_amounts = table::new<u64, u64>();
+        let withdrawn_amounts = table::new<address, u64>();
         let debt_root = DebtRoot {
             root_name: root_name,
             total_debt_amount,
