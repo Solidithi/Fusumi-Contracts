@@ -5,19 +5,45 @@ module fusumi_deployer::fusumi {
     use std::vector;
 
     /// Add business
-    public entry fun anchoring_ship(){
-
+    public entry fun anchoring_ship(
+        moderator: &signer,
+        ship_imo: address,
+    ){
+        debt_coordinator::anchoring_ship(moderator, ship_imo);
     }
 
     /// Remove business
-    public entry fun departing_ship(){
-
+    public entry fun departing_ship(
+        moderator: &signer,
+        ship_imo: address,
+    ){
+        debt_coordinator::departing_ship(moderator, ship_imo);
     }
 
     /// Create product
     /// Business and product relationships are 1:n
-    public entry fun load_cargo(){
-
+    public entry fun load_cargo(
+        ship: &signer,
+        cargo_name: String,
+        cargo_type: String,
+        cargo_price: u64,
+        cargo_unit_of_measure: String,
+        cargo_description: Option<String>,
+        cargo_images: vector<String>,
+        cargo_start_date: u64,
+        cargo_end_date: u64,
+    ){
+        debt_coordinator::load_cargo(
+            ship,
+            cargo_name,
+            cargo_type,
+            cargo_price,
+            cargo_unit_of_measure,
+            cargo_description,
+            cargo_images,
+            cargo_start_date,
+            cargo_end_date,
+        );
     }
 
     /// Dept root is where the debt is repaid, no one own this
