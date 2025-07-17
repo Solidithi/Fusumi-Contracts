@@ -109,4 +109,23 @@ module fusumi_deployer::fusumi_market {
         token::transfer(seller, token_id, seller_address, 1);
         // TODO: emit event
     }
+
+    public entry fun update_listing_price(
+        seller: &signer,
+        marketplace_address: address,
+        creator: address,
+        collection: String,
+        name: String,
+        property_version: u64,
+        new_price: u64,
+    ) acquires Marketplace {
+        let seller_address = signer::address_of(seller);
+        let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
+        let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
+        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
+        assert!(new_price > 0, error::invalid_argument(0)); // TODO: custom error
+        let listing = table::borrow_mut(&mut marketplace.listings, token_id);
+        assert!(listing.seller == seller_address, error::permission_denied(0)); // TODO: custom error
+        listing.price = new_price;
+    }
 }
