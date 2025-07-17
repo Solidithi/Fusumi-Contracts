@@ -177,4 +177,35 @@ module fusumi_deployer::fusumi_market {
         assert!(listing.seller == seller_address, error::permission_denied(0)); // TODO: custom error
         listing.price = new_price;
     }
+
+    #[view]
+    /// Get listing information
+    public fun get_listing_info(marketplace_address: address, creator: address, collection: String, name: String, property_version: u64): (address, u64, String, u64, u64) acquires Marketplace {
+        let marketplace = borrow_global<Marketplace>(marketplace_address);
+        let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
+        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
+        let listing = table::borrow(&marketplace.listings, token_id);
+        (
+            listing.seller,
+            listing.price,
+            listing.collection_name,
+            listing.shared_percentage,
+            listing.listed_timestamp
+        )
+    }
+
+    #[view]
+    /// Check if NFT is listed
+    public fun is_nft_listed(marketplace_address: address, creator: address, collection: String, name: String, property_version: u64): bool acquires Marketplace {
+        let marketplace = borrow_global<Marketplace>(marketplace_address);
+        let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
+        table::contains(&marketplace.listings, token_id)
+    }
+
+    #[view]
+    /// Get marketplace fee percentage
+    public fun get_marketplace_fee_percentage(marketplace_address: address): u64 acquires Marketplace {
+        let marketplace = borrow_global<Marketplace>(marketplace_address);
+        marketplace.marketplace_fee_percentage
+    }
 }
