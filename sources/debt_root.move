@@ -40,7 +40,7 @@ module fusumi_deployer::debt_root {
 
     // events
     #[event]
-    struct DebtRootCreated {
+    struct DebtRootCreated has drop, store {
         root_name: String,
         total_debt_amount: u64,
         debtor_address: address,
@@ -50,7 +50,7 @@ module fusumi_deployer::debt_root {
     }
 
     #[event]
-    struct DebtTokenMinted {
+    struct DebtTokenMinted has drop, store {
         debt_root_name: String,
         token_id: u64,
         receiver: address,
@@ -60,7 +60,7 @@ module fusumi_deployer::debt_root {
     }
 
     #[event]
-    struct DebtPaymentDeposited {
+    struct DebtPaymentDeposited has drop, store {
         debt_root_name: String,
         amount: u64,
         total_paid_amount: u64,
@@ -69,7 +69,7 @@ module fusumi_deployer::debt_root {
     }
 
     #[event]
-    struct DebtPaymentWithdrawn {
+    struct DebtPaymentWithdrawn has drop, store {
         debt_root_name: String,
         amount: u64,
         total_withdrawn_amount: u64,
@@ -78,7 +78,7 @@ module fusumi_deployer::debt_root {
     }
 
     #[event]
-    struct TokenParted {
+    struct TokenParted has drop, store {
         debt_root_name: String,
         parent_token_id: u64,
         new_token_id: u64,
