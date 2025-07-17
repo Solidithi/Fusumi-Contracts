@@ -99,4 +99,45 @@ module fusumi_deployer::stash {
         let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
         table::contains(&cargo_registry.cargo, cargo_id)
     }
+
+    #[view]
+    public fun get_cargo_info(cargo_id: u64):
+    (address, String, Option<String>, u64, String, String, vector<String>, u64, u64, u64, u64)
+    acquires Stash 
+    {
+        let cargo = get_cargo(cargo_id);
+        (
+            common::cargo_ship_imo(&cargo),
+            common::cargo_name(&cargo),
+            common::cargo_description(&cargo),
+            common::cargo_price(&cargo),
+            common::cargo_type(&cargo),
+            common::cargo_unit_of_measure(&cargo),
+            common::cargo_images(&cargo),
+            common::cargo_start_date(&cargo),
+            common::cargo_end_date(&cargo),
+            common::cargo_created_at(&cargo),
+            common::cargo_updated_at(&cargo)
+        )
+    }
+
+    #[view]
+    public fun cargo_exists_view(cargo_id: u64): bool acquires Stash{
+        cargo_existed(cargo_id);
+    }
+
+    #[view]
+    public fun get_cargos_by_ship(ship_imo: address): vector<u64> acquires Stash {
+        let cargo_registry = borrow_global<Stash>(@fusumi_deployer);
+        if(table::contains(&cargo_registry.cargo, ship_imo)){
+            *table::borrow(&cargo_registry.cargo, ship_imo)
+        } else {
+            vector::empty<u64>()
+        }
+    }
+
+    #[test_only]
+    public fun init_for_testing(account: &signer){
+        initialize(account);
+    }
 }
