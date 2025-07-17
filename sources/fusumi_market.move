@@ -178,6 +178,16 @@ module fusumi_deployer::fusumi_market {
         listing.price = new_price;
     }
 
+    public entry fun update_marketplace_fee(
+        owner: &signer,
+        new_fee_percentage: u64,
+    ) acquires Marketplace {
+        let owner_address = signer::address_of(owner);
+        assert!(new_fee_percentage <= 10, error::invalid_argument(0)); // Max 10%, TODO: custom error
+        let marketplace = borrow_global_mut<Marketplace>(owner_address);
+        marketplace.marketplace_fee_percentage = new_fee_percentage;
+    }
+
     #[view]
     /// Get listing information
     public fun get_listing_info(marketplace_address: address, creator: address, collection: String, name: String, property_version: u64): (address, u64, String, u64, u64) acquires Marketplace {
