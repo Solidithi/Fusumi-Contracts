@@ -5,6 +5,7 @@ module fusumi_deployer::common {
     use std::vector;
 
     /// Error codes
+    const E_CARGO_ALR_EXISTED: u64 = 1;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -22,4 +23,6 @@ module fusumi_deployer::common {
         updated_at: u64
     }
 
+    // Getter for err code
+    public fun cargo_alr_existed(): u64 {E_CARGO_ALR_EXISTED}
 }
