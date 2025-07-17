@@ -95,12 +95,14 @@ module fusumi_deployer::stash {
         );
     }
 
+    /// verify cargo existed
     public(friend) fun cargo_existed(cargo_id: u64): bool acquires Stash {
         let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
         table::contains(&cargo_registry.cargo, cargo_id)
     }
 
     #[view]
+    /// getter for cargo details
     public fun get_cargo_info(cargo_id: u64):
     (address, String, Option<String>, u64, String, String, vector<String>, u64, u64, u64, u64)
     acquires Stash 
@@ -122,11 +124,13 @@ module fusumi_deployer::stash {
     }
 
     #[view]
+    /// check for cargo existence
     public fun cargo_exists_view(cargo_id: u64): bool acquires Stash{
         cargo_existed(cargo_id);
     }
 
     #[view]
+    /// get all products that provide by a business
     public fun get_cargos_by_ship(ship_imo: address): vector<u64> acquires Stash {
         let cargo_registry = borrow_global<Stash>(@fusumi_deployer);
         if(table::contains(&cargo_registry.cargo, ship_imo)){
@@ -137,6 +141,7 @@ module fusumi_deployer::stash {
     }
 
     #[test_only]
+    /// must init for external testing file as init is private fun
     public fun init_for_testing(account: &signer){
         initialize(account);
     }
