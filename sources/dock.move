@@ -18,14 +18,14 @@ module fusumi_deployer::dock{
 
     #[event]
     struct ShipAnchored has drop, store {
-        ship_address: address,
+        ship_imo: address,
         moderator: address,
         timestamp: u64,
     }
 
     #[event]
     struct ShipDeparted has drop, store {
-        ship_address: address,
+        ship_imo: address,
         moderator: address,
         timestamp: u64,
     }
@@ -39,7 +39,8 @@ module fusumi_deployer::dock{
     }
 
     public entry fun anchoring_ship(
-        
+        moderator: &signer,
+        ship_imo: address
     ) acquires Dock {
         
     }
