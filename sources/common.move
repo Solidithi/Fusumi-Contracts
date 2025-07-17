@@ -4,6 +4,9 @@ module fusumi_deployer::common {
     use std::option::Option;
     use std::vector;
 
+    friend fusumi_deployer::debt_root;
+    friend fusumi_deployer::fusumi_nft_manager;
+
     /// Error codes
     const E_CARGO_ALR_EXISTED: u64 = 1;
     const E_NOT_AUTHORIZED: u64 = 2;
@@ -128,5 +131,20 @@ module fusumi_deployer::common {
             token_name,
             token_id,
         }
+    }
+
+    /// Getters for NFTOwnershipData
+    public fun nft_owner(data: &NFTOwnershipData): address {data.owner}
+    public fun nft_collection_creator(data: &NFTOwnershipData): address {data.collection_creator}
+    public fun nft_shared_percentage(data: &NFTOwnershipData): u64 {data.shared_percentage}
+    public fun nft_parent_token_id(data: &NFTOwnershipData): Option<u64> {data.parent_token_id}
+    public fun nft_is_root_nft(data: &NFTOwnershipData): bool {data.is_root_nft}
+    public fun nft_created_timestamp(data: &NFTOwnershipData): u64 {data.created_timestamp}
+    public fun nft_token_name(data: &NFTOwnershipData): String {data.token_name}
+    public fun nft_token_id(data: &NFTOwnershipData): u64 {data.token_id}
+    
+    /// Setters for NFTOwnershipData
+    public(friend) fun set_nft_shared_percentage(nft: &mut NFTOwnershipData, percentage: u64) {
+        nft.shared_percentage = percentage;
     }
 }
