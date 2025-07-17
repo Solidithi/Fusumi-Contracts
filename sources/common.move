@@ -25,4 +25,18 @@ module fusumi_deployer::common {
 
     // Getter for err code
     public fun cargo_alr_existed(): u64 {E_CARGO_ALR_EXISTED}
+
+    // Getter for cargo info
+    public fun cargo_id(cargo: &Cargo): u64 {cargo.id}
+    public fun cargo_ship_imo(cargo: &Cargo): address {cargo.ship_imo}
+    public fun cargo_name(cargo: &Cargo): String {cargo.cargo_name}
+    public fun cargo_type(cargo: &Cargo): String {cargo.cargo_type}
+    public fun cargo_price(cargo: &Cargo): u64 {cargo.price}
+    public fun cargo_unit_of_measure(cargo: &Cargo): String {cargo.unit_of_measure}
+    public fun cargo_description(cargo: &Cargo): Option<String> {cargo.description}
+    public fun cargo_images(cargo: &Cargo): vector<String> {cargo.images}
+    public fun cargo_start_date(cargo: &Cargo): u64 {cargo.start_date}
+    public fun cargo_end_date(cargo: &Cargo): u64 {cargo.end_date}
+    public fun cargo_created_at(cargo: &Cargo): u64 {cargo.created_at}
+    public fun cargo_updated_at(cargo: &Cargo): u64 {cargo.updated_at}
 }
