@@ -323,12 +323,20 @@ module fusumi_deployer::debt_root {
     ) acquires DebtRootRegistry {
         let withdrawer_address = signer::address_of(withdrawer);
         let registry = borrow_global_mut<DebtRootRegistry>(root_creator);
-        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            table::contains(&registry.debts, root_name), 
+            error::not_found(common::debt_root_not_found())
+        );
 
         let debt_root = table::borrow_mut(&mut registry.debts, root_name);
         // Find NFT/token data by owner (assume similar logic as before, adapt as needed)
         let nft_data_opt = common::find_nft_data_by_owner(withdrawer_address, root_creator);
-        assert!(option::is_some(&nft_data_opt), error::not_found(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            option::is_some(&nft_data_opt), 
+            error::not_found(common::nft_not_found())
+        );
 
         let nft_data = option::extract(&mut nft_data_opt);
         let already_withdrawn = if (table::contains(&debt_root.withdrawn_amounts, withdrawer_address)) {
@@ -339,8 +347,16 @@ module fusumi_deployer::debt_root {
 
         let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
         let available_to_withdraw = total_entitled - already_withdrawn;
-        assert!(withdrawal_amount <= available_to_withdraw, error::invalid_argument(0)); // TODO: replace 0 with custom error
-        assert!(coin::value(&debt_root.debt_vault) >= withdrawal_amount, error::invalid_argument(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            withdrawal_amount <= available_to_withdraw, 
+            error::invalid_argument(common::insufficient_withdrawable_amount())
+        );
+        assert!
+        (
+            coin::value(&debt_root.debt_vault) >= withdrawal_amount, 
+            error::invalid_argument(common::insufficient_debt_balance())
+        );
 
         let withdrawal_coin = coin::extract(&mut debt_root.debt_vault, withdrawal_amount);
         coin::deposit(withdrawer_address, withdrawal_coin);

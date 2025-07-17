@@ -10,6 +10,10 @@ module fusumi_deployer::common {
     const E_MAX_SHARED_PERCENTAGE_EXCEEDED: u64 = 3;
     const E_INVALID_SHARED_PERCENTAGE: u64 = 4;
     const E_INVALID_PRICE: u64 = 5;
+    const E_INSUFFICIENT_WITHDRAWABLE_AMOUNT: u64 = 6;
+    const E_INSUFFICIENT_DEBT_BALANCE: u64 = 7;
+    const E_NOT_NFT_OWNER: u64 = 8;
+    const E_DEBT_ROOT_NOT_FOUND: u64 = 9;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -44,7 +48,11 @@ module fusumi_deployer::common {
     public fun max_shared_percentage_exceeded(): u64 {E_MAX_SHARED_PERCENTAGE_EXCEEDED}
     public fun invalid_shared_percentage(): u64 {E_INVALID_SHARED_PERCENTAGE}
     public fun invalid_price(): u64 {E_INVALID_PRICE}
-
+    public fun insufficient_withdrawable_amount(): u64 {E_INSUFFICIENT_WITHDRAWABLE_AMOUNT} 
+    public fun insufficient_debt_balance(): u64 {E_INSUFFICIENT_DEBT_BALANCE}
+    public fun not_nft_owner(): u64 {E_NOT_NFT_OWNER}
+    public fun debt_root_not_found(): u64 {E_DEBT_ROOT_NOT_FOUND}
+    
     // Getter for cargo info
     public fun cargo_id(cargo: &Cargo): u64 {cargo.id}
     public fun cargo_ship_imo(cargo: &Cargo): address {cargo.ship_imo}
