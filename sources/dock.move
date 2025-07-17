@@ -91,4 +91,28 @@ module fusumi_deployer::dock{
             error::permission_denied(common::not_authorized())
         );
     }
+
+    #[view]
+    public fun is_ship_anchored_view(ship_imo: address): bool acquires Dock {
+        is_ship_anchored(ship_imo)
+    }
+
+    #[view]
+    /// Get all registered businesses
+    public fun get_all_ships(): vector<address> acquires Dock {
+        let dock = borrow_global<Dock>(@fusumi_deployer);
+        dock.ships
+    }
+
+    #[view]
+    public fun get_moderator(): address acquires Dock {
+        let dock = borrow_global<Dock>(@fusumi_deployer);
+        dock.moderator
+    }
+
+    #[test_only]
+    /// must init for external testing file as init is private fun
+    public fun init_for_testing(account: &signer) {
+        initialize(account);
+    }
 }
