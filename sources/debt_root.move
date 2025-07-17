@@ -362,7 +362,71 @@ module fusumi_deployer::debt_root {
     }
 
     /// Share ownership of the debt by minting a new token
-    public entry fun parting_token() {
-        
+    /// Derive a new debt token from an existing one and list it on the marketplace
+    public entry fun parting_token(
+        creator: &signer,
+        parent_token_owner: address,
+        marketplace_address: address,
+        root_name: String,
+        parent_token_id: u64,
+        parted_shared_percentage: u64,
+        listing_price: u64,
+    ) acquires DebtRootRegistry {
+        let creator_address = signer::address_of(creator);
+        // Get parent shared percentage
+        let parent_shared_percentage = common::get_nft_shared_percentage(parent_token_owner, creator_address);
+        assert!(parted_shared_percentage <= parent_shared_percentage, error::invalid_argument(0)); // TODO: replace 0 with custom error
+        assert!(listing_price > 0, error::invalid_argument(0)); // TODO: replace 0 with custom error
+
+        // Update parent token's shared percentage
+        common::update_nft_shared_percentage(parent_token_owner, creator_address, parent_shared_percentage - parted_shared_percentage);
+        let parent_id = common::get_nft_token_id(parent_token_owner, creator_address);
+
+        // Mint the new token to the marketplace initially
+        Self::mint_debt_token(
+            creator,
+            marketplace_address,
+            root_name,
+            parted_shared_percentage,
+            option::some(parent_token_id)
+        );
+
+        let new_token_id = {
+            let registry = borrow_global<DebtRootRegistry>(creator_address);
+            let debt_root = table::borrow(&registry.debts, root_name);
+            debt_root.next_token_id - 1
+        };
+
+        // Create the token name for the newly minted token
+        let mut token_name = string::utf8(b"Debt Token #");
+        string::append(&mut token_name, string::utf8(bcs::to_bytes(&new_token_id)));
+
+        let token_data_id = token::create_token_data_id(creator_address, root_name, token_name);
+
+        // List the token on the marketplace (adapt as needed for your market module)
+        fusumi_market::list_nft(
+            marketplace_address,
+            creator_address,
+            root_name,
+            token_name,
+            0,
+            parent_token_owner, // Original owner is the seller
+            listing_price,
+            creator_address,
+            root_name,
+            token_data_id,
+            parted_shared_percentage,
+        );
+
+        event::emit(TokenParted {
+            debt_root_name: root_name,
+            parent_token_id: parent_id,
+            new_token_id,
+            parent_owner: parent_token_owner,
+            maraketplace_address: marketplace_address,
+            parted_percentage: parted_shared_percentage,
+            listing_price,
+            created_at: timestamp::now_seconds(),
+        });
     }
 }
