@@ -287,13 +287,78 @@ module fusumi_deployer::debt_root {
     }
 
     /// Deposit a payment towards the debt root
-    public entry fun deposit_debt_payment() {
-        // Implementation for depositing a payment
+    public entry fun deposit_debt_payment(
+        debtor: &signer,
+        root_creator: address,
+        root_name: String,
+        payment_amount: u64,
+    ) acquires DebtRootRegistry {
+        let debtor_address = signer::address_of(debtor);
+        let registry = borrow_global_mut<DebtRootRegistry>(root_creator);
+        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
+
+        let debt_root = table::borrow_mut(&mut registry.debts, root_name);
+        assert!(debt_root.debtor_address == debtor_address, error::permission_denied(0)); // TODO: replace 0 with custom error
+        assert!(payment_amount > 0, error::invalid_argument(0)); // TODO: replace 0 with custom error
+
+        let payment_coin = coin::withdraw<AptosCoin>(debtor, payment_amount);
+        coin::merge(&mut debt_root.debt_vault, payment_coin);
+        debt_root.total_paid_amount = debt_root.total_paid_amount + payment_amount;
+
+        event::emit(DebtPaymentDeposited {
+            debt_root_name: root_name,
+            amount: payment_amount,
+            total_paid_amount: debt_root.total_paid_amount,
+            depositor: debtor_address,
+            created_at: timestamp::now_seconds(),
+        });
     }
 
     /// Withdraw a payment from the debt root
-    public entry fun withdraw_debt_payment() {
-        // Implementation for withdrawing a payment
+    public entry fun withdraw_debt_payment(
+        withdrawer: &signer,
+        root_creator: address,
+        root_name: String,
+        withdrawal_amount: u64,
+    ) acquires DebtRootRegistry {
+        let withdrawer_address = signer::address_of(withdrawer);
+        let registry = borrow_global_mut<DebtRootRegistry>(root_creator);
+        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
+
+        let debt_root = table::borrow_mut(&mut registry.debts, root_name);
+        // Find NFT/token data by owner (assume similar logic as before, adapt as needed)
+        let nft_data_opt = common::find_nft_data_by_owner(withdrawer_address, root_creator);
+        assert!(option::is_some(&nft_data_opt), error::not_found(0)); // TODO: replace 0 with custom error
+
+        let nft_data = option::extract(&mut nft_data_opt);
+        let already_withdrawn = if (table::contains(&debt_root.withdrawn_amounts, withdrawer_address)) {
+            *table::borrow(&debt_root.withdrawn_amounts, withdrawer_address)
+        } else {
+            0
+        };
+
+        let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
+        let available_to_withdraw = total_entitled - already_withdrawn;
+        assert!(withdrawal_amount <= available_to_withdraw, error::invalid_argument(0)); // TODO: replace 0 with custom error
+        assert!(coin::value(&debt_root.debt_vault) >= withdrawal_amount, error::invalid_argument(0)); // TODO: replace 0 with custom error
+
+        let withdrawal_coin = coin::extract(&mut debt_root.debt_vault, withdrawal_amount);
+        coin::deposit(withdrawer_address, withdrawal_coin);
+
+        let new_withdrawn_total = already_withdrawn + withdrawal_amount;
+        if (table::contains(&debt_root.withdrawn_amounts, withdrawer_address)) {
+            *table::borrow_mut(&mut debt_root.withdrawn_amounts, withdrawer_address) = new_withdrawn_total;
+        } else {
+            table::add(&mut debt_root.withdrawn_amounts, withdrawer_address, new_withdrawn_total);
+        };
+
+        event::emit(DebtPaymentWithdrawn {
+            debt_root_name: root_name,
+            amount: withdrawal_amount,
+            total_withdrawn_amount: new_withdrawn_total,
+            withdrawer: withdrawer_address,
+            created_at: timestamp::now_seconds(),
+        });
     }
 
     /// Share ownership of the debt by minting a new token
