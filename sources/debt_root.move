@@ -295,11 +295,23 @@ module fusumi_deployer::debt_root {
     ) acquires DebtRootRegistry {
         let debtor_address = signer::address_of(debtor);
         let registry = borrow_global_mut<DebtRootRegistry>(root_creator);
-        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            table::contains(&registry.debts, root_name), 
+            error::not_found(common::debt_root_not_found())
+        );
 
         let debt_root = table::borrow_mut(&mut registry.debts, root_name);
-        assert!(debt_root.debtor_address == debtor_address, error::permission_denied(0)); // TODO: replace 0 with custom error
-        assert!(payment_amount > 0, error::invalid_argument(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            debt_root.debtor_address == debtor_address, 
+            error::permission_denied(common::not_debtor())
+        );
+        assert!
+        (
+            payment_amount > 0, 
+            error::invalid_argument(common::invalid_payment_amount())
+        );
 
         let payment_coin = coin::withdraw<AptosCoin>(debtor, payment_amount);
         coin::merge(&mut debt_root.debt_vault, payment_coin);

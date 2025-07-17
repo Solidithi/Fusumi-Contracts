@@ -14,6 +14,8 @@ module fusumi_deployer::common {
     const E_INSUFFICIENT_DEBT_BALANCE: u64 = 7;
     const E_NOT_NFT_OWNER: u64 = 8;
     const E_DEBT_ROOT_NOT_FOUND: u64 = 9;
+    const E_NOT_DEBTOR: u64 = 10;
+    const E_INVALID_PAYMENT_AMOUNT: u64 = 11;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -52,7 +54,9 @@ module fusumi_deployer::common {
     public fun insufficient_debt_balance(): u64 {E_INSUFFICIENT_DEBT_BALANCE}
     public fun not_nft_owner(): u64 {E_NOT_NFT_OWNER}
     public fun debt_root_not_found(): u64 {E_DEBT_ROOT_NOT_FOUND}
-    
+    public fun not_debtor(): u64 {E_NOT_DEBTOR}
+    public fun invalid_payment_amount(): u64 {E_INVALID_PAYMENT_AMOUNT}
+
     // Getter for cargo info
     public fun cargo_id(cargo: &Cargo): u64 {cargo.id}
     public fun cargo_ship_imo(cargo: &Cargo): address {cargo.ship_imo}
