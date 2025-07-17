@@ -182,7 +182,11 @@ module fusumi_deployer::debt_root {
             cargo_id,
         };
         let registry = borrow_global_mut<DebtRootRegistry>(creator_address);
-        assert!(!table::contains(&registry.debts, root_name), error::invalid_state(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            !table::contains(&registry.debts, root_name), 
+            error::invalid_state(common::debt_root_already_exists())
+        );
         table::add(&mut registry.debts, root_name, debt_root);
 
         event::emit(DebtRootCreated {
@@ -207,10 +211,15 @@ module fusumi_deployer::debt_root {
     ) acquires DebtRootRegistry {
         let creator_address = signer::address_of(creator);
         let registry = borrow_global_mut<DebtRootRegistry>(creator_address);
-        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            table::contains(&registry.debts, root_name), 
+            error::not_found(common::debt_root_not_found())
+        );
 
         let debt_root = table::borrow_mut(&mut registry.debts, root_name);
-        assert!(
+        assert!
+        (
             debt_root.total_shared_percentage + shared_percentage <= 100,
             error::invalid_argument(common::max_shared_percentage_exceeded())
         );

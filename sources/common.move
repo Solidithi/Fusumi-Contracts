@@ -16,6 +16,7 @@ module fusumi_deployer::common {
     const E_DEBT_ROOT_NOT_FOUND: u64 = 9;
     const E_NOT_DEBTOR: u64 = 10;
     const E_INVALID_PAYMENT_AMOUNT: u64 = 11;
+    const E_DEBT_ROOT_ALREADY_EXISTS: u64 = 12;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -56,6 +57,7 @@ module fusumi_deployer::common {
     public fun debt_root_not_found(): u64 {E_DEBT_ROOT_NOT_FOUND}
     public fun not_debtor(): u64 {E_NOT_DEBTOR}
     public fun invalid_payment_amount(): u64 {E_INVALID_PAYMENT_AMOUNT}
+    public fun debt_root_already_exists(): u64 {E_DEBT_ROOT_ALREADY_EXISTS}
 
     // Getter for cargo info
     public fun cargo_id(cargo: &Cargo): u64 {cargo.id}
