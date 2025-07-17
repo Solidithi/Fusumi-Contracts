@@ -20,7 +20,7 @@ module fusumi_deployer::debt_coordinator {
     public entry fun load_cargo(
         ship: &signer,
         cargo_name: String,
-        cargo_id: u64,
+        cargo_type: String,
         price: u64,
         unit_of_measure: String,
         description: Option<String>,
@@ -31,7 +31,7 @@ module fusumi_deployer::debt_coordinator {
         stash::load_cargo(
             ship,
             cargo_name,
-            cargo_id,
+            cargo_type,
             price,
             unit_of_measure,
             description,
