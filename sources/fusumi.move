@@ -134,4 +134,53 @@ module fusumi_deployer::fusumi {
             listing_price
         );
     }
+        #[view]
+    public fun get_debt_root_info(root_creator: address, root_name: String): (String, u64, u64, address, u64, u64, u64) {
+        debt_coordinator::get_debt_root_info(root_creator, root_name)
+    }
+
+    #[view]
+    public fun calculate_available_withdrawal(root_creator: address, root_name: String, token_owner: address): u64 {
+        debt_coordinator::calculate_available_withdrawal(root_creator, root_name, token_owner)
+    }
+
+    #[view]
+    public fun get_total_withdrawn(root_creator: address, root_name: String, token_owner: address): u64 {
+        debt_coordinator::get_total_withdrawn(root_creator, root_name, token_owner)
+    }
+
+    #[view]
+    public fun get_token_holder_info(root_creator: address, root_name: String, token_owner: address): (u64, u64, u64, u64) {
+        debt_coordinator::get_token_holder_info(root_creator, root_name, token_owner)
+    }
+
+    #[view]
+    public fun is_ship_anchored_view(ship_imo: address): bool {
+        debt_coordinator::is_ship_anchored_view(ship_imo)
+    }
+
+    #[view]
+    public fun get_all_ships(): vector<address> {
+        debt_coordinator::get_all_ships()
+    }
+
+    #[view]
+    public fun get_moderator(): address {
+        debt_coordinator::get_moderator()
+    }
+
+    #[view]
+    public fun get_cargo_info(cargo_id: u64): (address, String, Option<String>, u64, String, String, vector<String>, u64, u64, u64, u64) {
+        debt_coordinator::get_cargo_info(cargo_id)
+    }
+
+    #[view]
+    public fun cargo_exists_view(cargo_id: u64): bool {
+        debt_coordinator::cargo_exists_view(cargo_id)
+    }
+
+    #[view]
+    public fun get_cargos_by_ship(ship_imo: address): vector<u64> {
+        debt_coordinator::get_cargos_by_ship(ship_imo)
+    }
 }
