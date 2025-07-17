@@ -39,6 +39,7 @@ module fusumi_deployer::stash {
         end_date: u64,
     ){
         let ship_imo = signer::address_of(ship);
+        dock::verify_ship_ownership(ship_imo);
 
         let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
         let cargo_id = cargo_registry.next_cargo_id;
