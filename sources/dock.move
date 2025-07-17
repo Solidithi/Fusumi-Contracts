@@ -65,12 +65,9 @@ module fusumi_deployer::dock{
             dock.moderator == moderator_addr,
             error::permission_denied(common::not_moderator())
         );
-        assert!
-        (
-            vector::contains(&dock.ships, &ship_imo), 
-            error::not_found(common::ship_not_found())
-        );
-        vector::remove(&mut dock.ships, &ship_imo);
+        let (found, index) = vector::index_of(&dock.ships, &ship_imo);
+        assert!(found, error::not_found(common::ship_not_found()));
+        vector::remove(&mut dock.ships, index);
         event::emit(ShipDeparted {
             ship_imo,
             moderator: moderator_addr,
