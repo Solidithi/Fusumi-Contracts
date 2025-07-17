@@ -276,6 +276,8 @@ module fusumi_deployer::debt_root {
             debt_root.next_token_id
         );
 
+        fusumi_nft_manager::add_nft_data(nft_data);
+
         table::add(
             &mut debt_root.withdrawn_amounts,
             receiver,
@@ -352,9 +354,8 @@ module fusumi_deployer::debt_root {
 
         let debt_root = table::borrow_mut(&mut registry.debts, root_name);
         // Find NFT/token data by owner (assume similar logic as before, adapt as needed)
-        let nft_data_opt = common::find_nft_data_by_owner(withdrawer_address, root_creator);
-        assert!
-        (
+        let nft_data_opt = fusumi_nft_manager::find_nft_data_by_owner(withdrawer_address, root_creator);
+        assert!(
             option::is_some(&nft_data_opt), 
             error::not_found(common::nft_not_found())
         );
@@ -411,21 +412,19 @@ module fusumi_deployer::debt_root {
     ) acquires DebtRootRegistry {
         let creator_address = signer::address_of(creator);
         // Get parent shared percentage
-        let parent_shared_percentage = common::get_nft_shared_percentage(parent_token_owner, creator_address);
-        assert!
-        (
+        let parent_shared_percentage = fusumi_nft_manager::get_nft_shared_percentage(parent_token_owner, creator_address);
+        assert!(
             parted_shared_percentage <= parent_shared_percentage, 
             error::invalid_argument(common::invalid_shared_percentage())
         );
-        assert!
-        (
+        assert!(
             listing_price > 0, 
             error::invalid_argument(common::invalid_price())
         );
 
         // Update parent token's shared percentage
-        common::update_nft_shared_percentage(parent_token_owner, creator_address, parent_shared_percentage - parted_shared_percentage);
-        let parent_id = common::get_nft_token_id(parent_token_owner, creator_address);
+        fusumi_nft_manager::update_nft_shared_percentage(parent_token_owner, creator_address, parent_shared_percentage - parted_shared_percentage);
+        let parent_id = fusumi_nft_manager::get_nft_token_id(parent_token_owner, creator_address);
 
         // Mint the new token to the marketplace initially
         Self::mint_debt_token(
@@ -496,7 +495,7 @@ module fusumi_deployer::debt_root {
     public fun calculate_available_withdrawal(root_creator: address, root_name: String, token_owner: address): u64 acquires DebtRootRegistry {
         let registry = borrow_global<DebtRootRegistry>(root_creator);
         let debt_root = table::borrow(&registry.debts, root_name);
-        let nft_data_opt = common::find_nft_data_by_owner(token_owner, root_creator);
+        let nft_data_opt = fusumi_nft_manager::find_nft_data_by_owner(token_owner, root_creator);
         if (option::is_some(&nft_data_opt)) {
             let nft_data = option::extract(&mut nft_data_opt);
             let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
@@ -528,7 +527,7 @@ module fusumi_deployer::debt_root {
     public fun get_token_holder_info(root_creator: address, root_name: String, token_owner: address): (u64, u64, u64, u64) acquires DebtRootRegistry {
         let registry = borrow_global<DebtRootRegistry>(root_creator);
         let debt_root = table::borrow(&registry.debts, root_name);
-        let nft_data_opt = common::find_nft_data_by_owner(token_owner, root_creator);
+        let nft_data_opt = fusumi_nft_manager::find_nft_data_by_owner(token_owner, root_creator);
         if (option::is_some(&nft_data_opt)) {
             let nft_data = option::extract(&mut nft_data_opt);
             let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
