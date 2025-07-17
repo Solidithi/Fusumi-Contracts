@@ -256,6 +256,17 @@ module fusumi_deployer::debt_root {
 
         token::mint_token_to(creator, receiver, individual_token_data_id, 1);
 
+        let nft_data = common::new_nft_ownership_data(
+            receiver,
+            creator_address,
+            shared_percentage,
+            parent_token_id,
+            false, // is_root_nft is false for parting tokens
+            timestamp::now_seconds(),
+            token_name,
+            debt_root.next_token_id
+        );
+
         table::add(
             &mut debt_root.withdrawn_amounts,
             receiver,
