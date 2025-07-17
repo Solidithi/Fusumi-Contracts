@@ -83,9 +83,9 @@ module fusumi_deployer::common {
     // Constructor functions for structs
     public fun new_cargo(
         id: u64,
-        business_address: address,
-        product_name: String,
-        product_type: String,
+        ship_imo: address,
+        cargo_name: String,
+        cargo_type: String,
         price: u64,
         unit_of_measure: String,
         description: Option<String>,
@@ -93,13 +93,13 @@ module fusumi_deployer::common {
         start_date: u64,
         end_date: u64,
         created_at: u64,
-        updated_at: u64,
-    ): Product {
-        Product {
+        updated_at: u64
+    ): Cargo {
+        Cargo {
             id,
-            business_address,
-            product_name,
-            product_type,
+            ship_imo,
+            cargo_name,
+            cargo_type,
             price,
             unit_of_measure,
             description,
@@ -107,7 +107,7 @@ module fusumi_deployer::common {
             start_date,
             end_date,
             created_at,
-            updated_at,
+            updated_at
         }
     }
 
