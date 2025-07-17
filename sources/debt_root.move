@@ -429,4 +429,73 @@ module fusumi_deployer::debt_root {
             created_at: timestamp::now_seconds(),
         });
     }
+
+        #[view]
+    /// View function to get debt root info
+    public fun get_debt_root_info(root_creator: address, root_name: String): (String, u64, u64, address, u64, u64, u64) acquires DebtRootRegistry {
+        let registry = borrow_global<DebtRootRegistry>(root_creator);
+        let debt_root = table::borrow(&registry.debts, root_name);
+        (
+            debt_root.root_name,
+            debt_root.total_debt_amount,
+            debt_root.total_paid_amount,
+            debt_root.debtor_address,
+            debt_root.total_shared_percentage,
+            coin::value(&debt_root.debt_vault),
+            debt_root.cargo_id
+        )
+    }
+
+    #[view]
+    /// Calculate available withdrawal amount for a token holder
+    public fun calculate_available_withdrawal(root_creator: address, root_name: String, token_owner: address): u64 acquires DebtRootRegistry {
+        let registry = borrow_global<DebtRootRegistry>(root_creator);
+        let debt_root = table::borrow(&registry.debts, root_name);
+        let nft_data_opt = common::find_nft_data_by_owner(token_owner, root_creator);
+        if (option::is_some(&nft_data_opt)) {
+            let nft_data = option::extract(&mut nft_data_opt);
+            let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
+            let already_withdrawn = if (table::contains(&debt_root.withdrawn_amounts, token_owner)) {
+                *table::borrow(&debt_root.withdrawn_amounts, token_owner)
+            } else {
+                0
+            };
+            total_entitled - already_withdrawn
+        } else {
+            0
+        }
+    }
+
+    #[view]
+    /// Get total withdrawn amount by a token holder
+    public fun get_total_withdrawn(root_creator: address, root_name: String, token_owner: address): u64 acquires DebtRootRegistry {
+        let registry = borrow_global<DebtRootRegistry>(root_creator);
+        let debt_root = table::borrow(&registry.debts, root_name);
+        if (table::contains(&debt_root.withdrawn_amounts, token_owner)) {
+            *table::borrow(&debt_root.withdrawn_amounts, token_owner)
+        } else {
+            0
+        }
+    }
+
+    #[view]
+    /// Get comprehensive token holder info
+    public fun get_token_holder_info(root_creator: address, root_name: String, token_owner: address): (u64, u64, u64, u64) acquires DebtRootRegistry {
+        let registry = borrow_global<DebtRootRegistry>(root_creator);
+        let debt_root = table::borrow(&registry.debts, root_name);
+        let nft_data_opt = common::find_nft_data_by_owner(token_owner, root_creator);
+        if (option::is_some(&nft_data_opt)) {
+            let nft_data = option::extract(&mut nft_data_opt);
+            let total_entitled = (debt_root.total_paid_amount * common::nft_shared_percentage(&nft_data)) / 100;
+            let already_withdrawn = if (table::contains(&debt_root.withdrawn_amounts, token_owner)) {
+                *table::borrow(&debt_root.withdrawn_amounts, token_owner)
+            } else {
+                0
+            };
+            let available = total_entitled - already_withdrawn;
+            (common::nft_shared_percentage(&nft_data), total_entitled, already_withdrawn, available)
+        } else {
+            (0, 0, 0, 0)
+        }
+    }
 }
