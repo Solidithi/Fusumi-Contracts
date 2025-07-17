@@ -7,6 +7,7 @@ module fusumi_deployer::common {
     /// Error codes
     const E_CARGO_ALR_EXISTED: u64 = 1;
     const E_NOT_AUTHORIZED: u64 = 2;
+    const E_MAX_SHARED_PERCENTAGE_EXCEEDED: u64 = 3;
 
     /// Cargo information structure
     struct Cargo has store, drop, copy {
@@ -27,6 +28,7 @@ module fusumi_deployer::common {
     // Getter for err code
     public fun cargo_alr_existed(): u64 {E_CARGO_ALR_EXISTED}
     public fun not_authorized(): u64 {E_NOT_AUTHORIZED}
+    public fun max_shared_percentage_exceeded(): u64 {E_MAX_SHARED_PERCENTAGE_EXCEEDED}
 
     // Getter for cargo info
     public fun cargo_id(cargo: &Cargo): u64 {cargo.id}

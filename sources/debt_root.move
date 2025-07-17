@@ -30,7 +30,7 @@ module fusumi_deployer::debt_root {
         total_shared_percentage: u64,
         created_at: u64,
         debt_vault: coin::Coin<AptosCoin>,
-        withdrawn_amount: u64,
+        withdrawn_amounts: u64,
         cargo_id: u64,
     }
 
@@ -167,6 +167,7 @@ module fusumi_deployer::debt_root {
         );
 
         let debt_vault = coin::zero<AptosCoin>();
+        let withdrawn_amounts = table::new<u64, u64>();
         let debt_root = DebtRoot {
             root_name: root_name,
             total_debt_amount,
@@ -177,7 +178,7 @@ module fusumi_deployer::debt_root {
             total_shared_percentage: 0,
             created_at: timestamp::now_seconds(),
             debt_vault,
-            withdrawn_amount: 0,
+            withdrawn_amounts,
             cargo_id,
         };
         let registry = borrow_global_mut<DebtRootRegistry>(creator_address);
@@ -194,9 +195,84 @@ module fusumi_deployer::debt_root {
         });
     }
 
-    /// Mint a debt token representing the debt
-    public entry fun mint_debt_token() {
+    /// Mint a new debt NFT with specified shared percentage
+    /// 1st minter is the creator and need to pass 100% shared percentage
+    /// parted NFTs will have less and this function will be called through derive_nft
+    public entry fun mint_debt_token(
+        creator: &signer,
+        receiver: address,
+        root_name: String,
+        shared_percentage: u64,
+        parent_token_id: Option<u64>,
+    ) acquires DebtRootRegistry {
+        let creator_address = signer::address_of(creator);
+        let registry = borrow_global_mut<DebtRootRegistry>(creator_address);
+        assert!(table::contains(&registry.debts, root_name), error::not_found(0)); // TODO: replace 0 with custom error
 
+        let debt_root = table::borrow_mut(&mut registry.debts, root_name);
+        assert!(
+            debt_root.total_shared_percentage + shared_percentage <= 100,
+            error::invalid_argument(common::max_shared_percentage_exceeded())
+        );
+
+        let mut token_name = string::utf8(b"Debt Token #");
+        string::append(&mut token_name, string::utf8(bcs::to_bytes(&debt_root.next_token_id)));
+        let mut token_uri = string::utf8(b"https://debt-nft.com/token/");
+        string::append(&mut token_uri, string::utf8(bcs::to_bytes(&debt_root.next_token_id)));
+
+        let individual_token_data_id = token::create_tokendata(
+            creator,
+            root_name,
+            token_name,
+            string::utf8(b"Debt sharing token"),
+            1,
+            token_uri,
+            creator_address,
+            1,
+            0,
+            token::create_token_mutability_config(&vector<bool>[false, false, false, false, true]),
+            vector<String>[
+                string::utf8(b"shared"),
+                string::utf8(b"parent_token_id"),
+                string::utf8(b"is_root"),
+                string::utf8(b"created_at"),
+                string::utf8(b"cargo_id")
+            ],
+            vector<vector<u8>>[
+                bcs::to_bytes(&shared_percentage),
+                bcs::to_bytes(&parent_token_id),
+                bcs::to_bytes(&false),
+                bcs::to_bytes(&timestamp::now_seconds()),
+                bcs::to_bytes(&debt_root.cargo_id)
+            ],
+            vector<String>[
+                string::utf8(b"u64"),
+                string::utf8(b"option<u64>"),
+                string::utf8(b"bool"),
+                string::utf8(b"u64"),
+                string::utf8(b"string")
+            ],
+        );
+
+        token::mint_token_to(creator, receiver, individual_token_data_id, 1);
+
+        table::add(
+            &mut debt_root.withdrawn_amounts,
+            receiver,
+            0
+        );
+        debt_root.total_shared_percentage = debt_root.total_shared_percentage + shared_percentage;
+        let current_token_id = debt_root.next_token_id;
+        debt_root.next_token_id = debt_root.next_token_id + 1;
+
+        event::emit(DebtTokenMinted {
+            debt_root_name: root_name,
+            token_id: current_token_id,
+            receiver,
+            shared_percentage,
+            parent_token_id,
+            created_at: timestamp::now_seconds(),
+        });
     }
 
     /// Deposit a payment towards the debt root
