@@ -43,8 +43,11 @@ module fusumi_deployer::stash {
         let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
         let cargo_id = cargo_registry.next_cargo_id;
         cargo_registry.next_cargo_id += 1;
-        assert!(!table::contains(&cargo_registry.cargo, cargo_id),
-        error::already_exists(common::cargo_alr_existed()));
+        assert!
+        (
+            !table::contains(&cargo_registry.cargo, cargo_id),
+            error::already_exists(common::cargo_alr_existed())
+        );
 
         let cargo = common::Cargo {
             id: cargo_id,
@@ -70,5 +73,30 @@ module fusumi_deployer::stash {
             vector::push_back(&mut vec, product_id);
             table::add(&mut cargo_registry.ship_stash, ship_imo, vec);
         }
+    }
+
+    /// get product by id
+    public(friend) fun get_cargo(cargo_id: u64): common::Cargo acquires Stash {
+        let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
+        assert!
+        (
+            table::contains(&cargo_registry.cargo, cargo_id), 
+            error::not_found(common::cargo_not_found())
+        );
+    }
+
+    /// verify product belong to a business
+    public(friend) fun verify_cargo_ownership(cargo_id: u64, ship_imo: address) acquires Stash {
+        let cargo = get_cargo(cargo_id);
+        assert!
+        (
+            common::cargo_ship_imo(&cargo) == ship_imo,
+            error::permission_denied(common::not_authorized())    
+        );
+    }
+
+    public(friend) fun cargo_existed(cargo_id: u64): bool acquires Stash {
+        let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
+        table::contains(&cargo_registry.cargo, cargo_id)
     }
 }
