@@ -38,8 +38,59 @@ module fusumi_deployer::debt_root {
         debts: Table<String, DebtRoot>,
     }
 
+    // events
+    #[event]
+    struct DebtRootCreated {
+        root_name: String,
+        total_debt_amount: u64,
+        debtor_address: address,
+        creator_address: address,
+        cargo_id: u64,
+        created_at: u64,
+    }
+
+    #[event]
+    struct DebtTokenMinted {
+        debt_root_name: String,
+        token_id: u64,
+        receiver: address,
+        shared_percentage: u64,
+        parent_token_id: Option<u64>,
+        created_at: u64,
+    }
+
+    #[event]
+    struct DebtPaymentDeposited {
+        debt_root_name: String,
+        amount: u64,
+        total_paid_amount: u64,
+        depositor: address,
+        created_at: u64,
+    }
+
+    #[event]
+    struct DebtPaymentWithdrawn {
+        debt_root_name: String,
+        amount: u64,
+        total_withdrawn_amount: u64,
+        withdrawer: address,
+        created_at: u64,
+    }
+
+    #[event]
+    struct TokenParted {
+        debt_root_name: String,
+        parent_token_id: u64,
+        new_token_id: u64,
+        parent_owner: address,
+        maraketplace_address: address,
+        parted_percentage: u64,
+        listing_price: u64,
+        created_at: u64,
+    }
+
     /// Initialize the debt root module
-    public fun init_module(account: &signer) {
+    fun init_module(account: &signer) {
         move_to(account, DebtRootRegistry {
             debts: table::new(),
         });
