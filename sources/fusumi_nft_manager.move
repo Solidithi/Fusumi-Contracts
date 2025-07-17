@@ -44,7 +44,7 @@ module fusumi_deployer::fusumi_nft_manager {
     ) acquires GlobalNFTRegistry {
         let nft_registry = borrow_global_mut<GlobalNFTRegistry>(@fusumi_deployer);
         let len = vector::length(&nft_registry.nft_data);
-        let mut i = 0;
+        let i = 0;
         while (i < len) {
             let data = vector::borrow_mut(&mut nft_registry.nft_data, i);
             if (common::nft_owner(data) == owner && common::nft_collection_creator(data) == collection_creator) {
@@ -63,7 +63,7 @@ module fusumi_deployer::fusumi_nft_manager {
     ): u64 acquires GlobalNFTRegistry {
         let nft_registry = borrow_global<GlobalNFTRegistry>(@fusumi_deployer);
         let len = vector::length(&nft_registry.nft_data);
-        let mut i = 0;
+        let i = 0;
         while (i < len) {
             let data = vector::borrow(&nft_registry.nft_data, i);
             if (common::nft_owner(data) == owner && common::nft_collection_creator(data) == collection_creator) {
@@ -81,7 +81,7 @@ module fusumi_deployer::fusumi_nft_manager {
     ): u64 acquires GlobalNFTRegistry {
         let nft_registry = borrow_global<GlobalNFTRegistry>(@fusumi_deployer);
         let len = vector::length(&nft_registry.nft_data);
-        let mut i = 0;
+        let i = 0;
         while (i < len) {
             let data = vector::borrow(&nft_registry.nft_data, i);
             if (common::nft_owner(data) == owner && common::nft_collection_creator(data) == collection_creator) {
@@ -99,7 +99,7 @@ module fusumi_deployer::fusumi_nft_manager {
         collection_creator: address
     ): Option<common::NFTOwnershipData> {
         let len = vector::length(nft_data);
-        let mut i = 0;
+        let i = 0;
         while (i < len) {
             let data = vector::borrow(nft_data, i);
             if (common::nft_owner(data) == owner && common::nft_collection_creator(data) == collection_creator) {
