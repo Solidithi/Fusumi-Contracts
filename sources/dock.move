@@ -16,6 +16,20 @@ module fusumi_deployer::dock{
         moderator: address,
     }
 
+    #[event]
+    struct ShipAnchored has drop, store {
+        ship_address: address,
+        moderator: address,
+        timestamp: u64,
+    }
+
+    #[event]
+    struct ShipDeparted has drop, store {
+        ship_address: address,
+        moderator: address,
+        timestamp: u64,
+    }
+
     public(friend) fun initialize(account: &signer) {
         let moderator = signer::address_of(account);
         move_to(account, Dock {
