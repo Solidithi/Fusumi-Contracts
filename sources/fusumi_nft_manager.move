@@ -138,6 +138,7 @@ module fusumi_deployer::fusumi_nft_manager {
     }
 
     #[test_only]
+    /// must init for external testing file as init is private fun
     public fun init_for_testing(account: &signer) {
         initialize(account);
     }

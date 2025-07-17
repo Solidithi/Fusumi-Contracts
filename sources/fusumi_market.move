@@ -218,4 +218,10 @@ module fusumi_deployer::fusumi_market {
         let marketplace = borrow_global<Marketplace>(marketplace_address);
         marketplace.marketplace_fee_percentage
     }
+
+    #[test_only]
+    /// must init for external testing file as init is private fun
+    public fun init_for_testing(account: &signer) {
+        initialize(account);
+    }
 }
