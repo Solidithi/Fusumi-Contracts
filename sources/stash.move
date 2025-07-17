@@ -27,31 +27,30 @@ module fusumi_deployer::stash {
         });
     }
 
-    public entry fun load_cargo(
+        public entry fun load_cargo(
         ship: &signer,
         cargo_name: String,
-        cargo_id: u64,
+        cargo_type: String,
         price: u64,
         unit_of_measure: String,
         description: Option<String>,
         images: vector<String>,
         start_date: u64,
         end_date: u64,
-    ){
+    ) acquires Stash {
         let ship_imo = signer::address_of(ship);
-        dock::verify_ship_ownership(ship_imo);
+        dock::verify_ship_authorization(ship_imo);
 
         let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
         let cargo_id = cargo_registry.next_cargo_id;
         cargo_registry.next_cargo_id += 1;
-        assert!
-        (
+        assert!(
             !table::contains(&cargo_registry.cargo, cargo_id),
             error::already_exists(common::cargo_alr_existed())
         );
 
-        let cargo = common::Cargo {
-            id: cargo_id,
+        let cargo = common::new_cargo(
+            cargo_id,
             ship_imo,
             cargo_name,
             cargo_type,
@@ -61,29 +60,29 @@ module fusumi_deployer::stash {
             images,
             start_date,
             end_date,
-            created_at: timestamp::now(),
-            updated_at: timestamp::now(),
-        };
+            timestamp::now_seconds(),
+            timestamp::now_seconds(),
+        );
         table::add(&mut cargo_registry.cargo, cargo_id, cargo);
 
         if(table::contains(&cargo_registry.ship_stash, ship_imo)) {
             let vec_ref = table::borrow_mut(&mut cargo_registry.ship_stash, ship_imo);
             vector::push_back(vec_ref, cargo_id);
         } else {
-            let vec_ref = vector::empty<u64>();
-            vector::push_back(&mut vec, product_id);
+            let vec = vector::empty<u64>();
+            vector::push_back(&mut vec, cargo_id);
             table::add(&mut cargo_registry.ship_stash, ship_imo, vec);
         }
     }
 
     /// get product by id
     public(friend) fun get_cargo(cargo_id: u64): common::Cargo acquires Stash {
-        let cargo_registry = borrow_global_mut<Stash>(@fusumi_deployer);
-        assert!
-        (
+        let cargo_registry = borrow_global<Stash>(@fusumi_deployer);
+        assert!(
             table::contains(&cargo_registry.cargo, cargo_id), 
             error::not_found(common::cargo_not_found())
         );
+        *table::borrow(&cargo_registry.cargo, cargo_id)
     }
 
     /// verify product belong to a business
@@ -127,15 +126,15 @@ module fusumi_deployer::stash {
     #[view]
     /// check for cargo existence
     public fun cargo_exists_view(cargo_id: u64): bool acquires Stash{
-        cargo_existed(cargo_id);
+        cargo_existed(cargo_id)
     }
 
     #[view]
     /// get all products that provide by a business
     public fun get_cargos_by_ship(ship_imo: address): vector<u64> acquires Stash {
         let cargo_registry = borrow_global<Stash>(@fusumi_deployer);
-        if(table::contains(&cargo_registry.cargo, ship_imo)){
-            *table::borrow(&cargo_registry.cargo, ship_imo)
+        if(table::contains(&cargo_registry.ship_stash, ship_imo)){
+            *table::borrow(&cargo_registry.ship_stash, ship_imo)
         } else {
             vector::empty<u64>()
         }
