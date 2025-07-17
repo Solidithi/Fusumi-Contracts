@@ -498,4 +498,10 @@ module fusumi_deployer::debt_root {
             (0, 0, 0, 0)
         }
     }
+
+    #[test_only]
+    /// must init for external testing file as init is private fun
+    public fun initialize_for_testing(account: &signer) {
+        initialize(account);
+    }
 }
