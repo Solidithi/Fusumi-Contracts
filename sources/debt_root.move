@@ -375,8 +375,16 @@ module fusumi_deployer::debt_root {
         let creator_address = signer::address_of(creator);
         // Get parent shared percentage
         let parent_shared_percentage = common::get_nft_shared_percentage(parent_token_owner, creator_address);
-        assert!(parted_shared_percentage <= parent_shared_percentage, error::invalid_argument(0)); // TODO: replace 0 with custom error
-        assert!(listing_price > 0, error::invalid_argument(0)); // TODO: replace 0 with custom error
+        assert!
+        (
+            parted_shared_percentage <= parent_shared_percentage, 
+            error::invalid_argument(common::invalid_shared_percentage())
+        );
+        assert!
+        (
+            listing_price > 0, 
+            error::invalid_argument(common::invalid_price())
+        );
 
         // Update parent token's shared percentage
         common::update_nft_shared_percentage(parent_token_owner, creator_address, parent_shared_percentage - parted_shared_percentage);
