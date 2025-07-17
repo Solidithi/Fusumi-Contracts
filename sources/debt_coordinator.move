@@ -5,14 +5,14 @@ module fusumi_deployer::debt_coordinator {
     use std::vector;
     use fusumi_deployer::dock;
     use fusumi_deployer::stash;
-    use fusumi_deployer::fusumi_market_manager;
+    use fusumi_deployer::fusumi_nft_manager;
     use fusumi_deployer::debt_root;
 
     /// Initialize the entire debt sharing system
     fun init_module(account: &signer) {
         dock::initialize(account);
         stash::initialize(account);
-        fusumi_market_manager::initialize(account);
+        fusumi_nft_manager::initialize(account);
         debt_root::initialize(account);
     }
 
@@ -198,6 +198,6 @@ module fusumi_deployer::debt_coordinator {
 
     #[view]
     public fun get_nft_data_by_owner(owner: address, collection_creator: address): (u64, Option<u64>, bool, u64) {
-        fusumi_market_manager::get_nft_data_by_owner(owner, collection_creator)
+        fusumi_nft_manager::get_nft_data_by_owner(owner, collection_creator)
     }
 }
