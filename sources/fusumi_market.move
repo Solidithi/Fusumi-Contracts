@@ -80,8 +80,16 @@ module fusumi_deployer::fusumi_market {
     ) acquires Marketplace {
         let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!(!table::contains(&marketplace.listings, token_id), error::already_exists(0)); // TODO: custom error
-        assert!(price > 0, error::invalid_argument(0)); // TODO: custom error
+        assert!
+        (
+            !table::contains(&marketplace.listings, token_id), 
+            error::already_exists(common::nft_already_listed())
+        );
+        assert!
+        (
+            price > 0, 
+            error::invalid_argument(common::invalid_price())
+        );
         let listing = Listing {
             token_id,
             seller,
@@ -114,7 +122,11 @@ module fusumi_deployer::fusumi_market {
         let buyer_address = signer::address_of(buyer);
         let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
+        assert!
+        (
+            table::contains(&marketplace.listings, token_id), 
+            error::not_found(common::nft_not_listed())
+        );
         let listing = table::remove(&mut marketplace.listings, token_id);
         let marketplace_fee = (listing.price * marketplace.marketplace_fee_percentage) / 100;
         let seller_amount = listing.price - marketplace_fee;
@@ -146,9 +158,17 @@ module fusumi_deployer::fusumi_market {
         let seller_address = signer::address_of(seller);
         let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
+        assert!
+        (
+            table::contains(&marketplace.listings, token_id), 
+            error::not_found(common::nft_not_listed())
+        );
         let listing = table::borrow(&marketplace.listings, token_id);
-        assert!(listing.seller == seller_address, error::permission_denied(0)); // TODO: custom error
+        assert!
+        (
+            listing.seller == seller_address, 
+            error::permission_denied(common::not_nft_owner())
+        );
         let listing = table::remove(&mut marketplace.listings, token_id);
         token::transfer(seller, token_id, seller_address, 1);
         event::emit(NFTDelisted {
@@ -171,10 +191,22 @@ module fusumi_deployer::fusumi_market {
         let seller_address = signer::address_of(seller);
         let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
-        assert!(new_price > 0, error::invalid_argument(0)); // TODO: custom error
+        assert!
+        (
+            table::contains(&marketplace.listings, token_id), 
+            error::not_found(common::nft_not_listed())
+        );
+        assert!
+        (
+            new_price > 0, 
+            error::invalid_argument(common::invalid_price())
+        );
         let listing = table::borrow_mut(&mut marketplace.listings, token_id);
-        assert!(listing.seller == seller_address, error::permission_denied(0)); // TODO: custom error
+        assert!
+        (
+            listing.seller == seller_address, 
+            error::permission_denied(common::not_nft_owner())
+        );
         listing.price = new_price;
     }
 
@@ -183,7 +215,11 @@ module fusumi_deployer::fusumi_market {
         new_fee_percentage: u64,
     ) acquires Marketplace {
         let owner_address = signer::address_of(owner);
-        assert!(new_fee_percentage <= 10, error::invalid_argument(0)); // Max 10%, TODO: custom error
+        assert!
+        (
+            new_fee_percentage <= 10, 
+            error::invalid_argument(common::invalid_fee_percentage())
+        );
         let marketplace = borrow_global_mut<Marketplace>(owner_address);
         marketplace.marketplace_fee_percentage = new_fee_percentage;
     }
@@ -193,7 +229,11 @@ module fusumi_deployer::fusumi_market {
     public fun get_listing_info(marketplace_address: address, creator: address, collection: String, name: String, property_version: u64): (address, u64, String, u64, u64) acquires Marketplace {
         let marketplace = borrow_global<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!(table::contains(&marketplace.listings, token_id), error::not_found(0)); // TODO: custom error
+        assert!
+        (
+            table::contains(&marketplace.listings, token_id),
+            error::not_found(common::nft_not_listed())
+        );
         let listing = table::borrow(&marketplace.listings, token_id);
         (
             listing.seller,
