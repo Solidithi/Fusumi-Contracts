@@ -81,8 +81,7 @@ module fusumi_deployer::fusumi_market {
     ) acquires Marketplace {
         let marketplace = borrow_global_mut<Marketplace>(marketplace_address);
         let token_id = token::create_token_id(token::create_token_data_id(creator, collection, name), property_version);
-        assert!
-        (
+        assert!(
             !table::contains(&marketplace.listings, token_id), 
             error::already_exists(common::nft_already_listed())
         );
@@ -130,7 +129,7 @@ module fusumi_deployer::fusumi_market {
         );
         let listing = table::remove(&mut marketplace.listings, token_id);
         let marketplace_fee = (listing.price * marketplace.marketplace_fee_percentage) / 100;
-        let seller_amount = listing.price - marketplace_fee;
+        let _seller_amount = listing.price - marketplace_fee;
         let payment_coin = coin::withdraw<AptosCoin>(buyer, listing.price);
         let marketplace_fee_coin = coin::extract(&mut payment_coin, marketplace_fee);
         coin::deposit(listing.seller, payment_coin);

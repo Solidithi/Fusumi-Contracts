@@ -8,7 +8,7 @@ module fusumi_deployer::fusumi_nft_manager {
 
     friend fusumi_deployer::debt_coordinator;
     friend fusumi_deployer::debt_root;
-    friend fusumi_deployer::fusumi_market_manager;
+    friend fusumi_deployer::fusumi_market;
 
     // Global storage for NFT ownership data
     struct GlobalNFTRegistry has key {
@@ -93,6 +93,35 @@ module fusumi_deployer::fusumi_nft_manager {
         abort error::not_found(common::not_nft_owner())
     }
 
+    public(friend) fun transfer_nft_ownership(
+        from: address,
+        to: address,
+        collection_creator: address
+    ) acquires GlobalNFTRegistry {
+        let nft_registry = borrow_global_mut<GlobalNFTRegistry>(@fusumi_deployer);
+        let len = vector::length(&nft_registry.nft_data);
+        let i = 0;
+        while (i < len) {
+            let data = vector::borrow_mut(&mut nft_registry.nft_data, i);
+            if (common::nft_owner(data) == from && common::nft_collection_creator(data) == collection_creator) {
+                let new_data = common::new_nft_ownership_data(
+                    to,
+                    common::nft_collection_creator(data),
+                    common::nft_shared_percentage(data),
+                    common::nft_parent_token_id(data),
+                    common::nft_is_root_nft(data),
+                    common::nft_created_timestamp(data),
+                    common::nft_token_name(data),
+                    common::nft_token_id(data)
+                );
+                *data = new_data;
+                return;
+            };
+            i = i + 1;
+        };
+        abort error::not_found(common::not_nft_owner())
+    }
+
     /// Helper function to find NFT data by owner
     fun find_nft_data_by_owner_internal(
         nft_data: &vector<common::NFTOwnershipData>,
@@ -122,7 +151,7 @@ module fusumi_deployer::fusumi_nft_manager {
             let nft_data = option::extract(&mut nft_data_opt);
             (
                 common::nft_shared_percentage(&nft_data),
-                *common::nft_parent_token_id(&nft_data),
+                common::nft_parent_token_id(&nft_data),
                 common::nft_is_root_nft(&nft_data),
                 common::nft_token_id(&nft_data)
             )
