@@ -15,7 +15,7 @@ module fusumi_deployer::debt_root {
     use fusumi_deployer::common;
     use fusumi_deployer::dock;
     use fusumi_deployer::stash;
-    use fusumi_deployer::fusumi_market_manager;
+    use fusumi_deployer::fusumi_nft_manager;
     use fusumi_deployer::fusumi_market;
 
     friend fusumi_deployer::debt_coordinator;
@@ -142,7 +142,7 @@ module fusumi_deployer::debt_root {
             creator_address,
             1,
             0,
-            aptos_tokens::token::create_token_mutability_config(&vector<bool>[false, false, false, false, true]),
+            aptos_token::token::create_token_mutability_config(&vector<bool>[false, false, false, false, true]),
             vector<String>[
                 string::utf8(b"shared"),
                 string::utf8(b"debt_amount"),
