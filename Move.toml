@@ -3,7 +3,7 @@ name = "fusumi"
 version = "0.0.1"
 
 [addresses]
-fusumi_deployer = "0x77f85a9b7343634d922850e47c1a34c9c529308ab8b1f1a850803149d95235c0"
+fusumi_deployer = "0x37179705197d305198c8cfa6c98af4d0fa543d61d5876bd187ba6c76131b0f2a"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-core.git"
