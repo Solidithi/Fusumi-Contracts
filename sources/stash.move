@@ -86,7 +86,7 @@ module fusumi_deployer::stash {
     }
 
     /// verify product belong to a business
-    public(friend) fun verify_cargo_ownership(cargo_id: u64, ship_imo: address) acquires Stash {
+    public fun verify_cargo_ownership(cargo_id: u64, ship_imo: address) acquires Stash {
         let cargo = get_cargo(cargo_id);
         assert!
         (

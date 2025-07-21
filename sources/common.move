@@ -2,7 +2,6 @@
 module fusumi_deployer::common {
     use std::string::String;
     use std::option::Option;
-    use std::vector;
 
     friend fusumi_deployer::debt_root;
     friend fusumi_deployer::fusumi_nft_manager;

@@ -112,4 +112,9 @@ module fusumi_deployer::dock{
     public fun init_for_testing(account: &signer) {
         initialize(account);
     }
+
+    #[view]
+    public fun is_initialized(): bool {
+        exists<Dock>(@fusumi_deployer)
+    }
 }

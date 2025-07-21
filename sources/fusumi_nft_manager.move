@@ -3,7 +3,6 @@ module fusumi_deployer::fusumi_nft_manager {
     use std::error;
     use std::option::{Self, Option};
     use std::vector;
-    use std::string::String;
     use fusumi_deployer::common;
 
     friend fusumi_deployer::debt_coordinator;
@@ -23,7 +22,7 @@ module fusumi_deployer::fusumi_nft_manager {
     }
 
     /// Add new NFT ownership data (friend access)
-    public(friend) fun add_nft_data(nft_data: common::NFTOwnershipData) acquires GlobalNFTRegistry {
+    public fun add_nft_data(nft_data: common::NFTOwnershipData) acquires GlobalNFTRegistry {
         let nft_registry = borrow_global_mut<GlobalNFTRegistry>(@fusumi_deployer);
         vector::push_back(&mut nft_registry.nft_data, nft_data);
     }

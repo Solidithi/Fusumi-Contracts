@@ -1,8 +1,6 @@
 module fusumi_deployer::debt_coordinator {
-    use std::signer;
     use std::string::String;
     use std::option::Option;
-    use std::vector;
     use fusumi_deployer::dock;
     use fusumi_deployer::stash;
     use fusumi_deployer::fusumi_nft_manager;

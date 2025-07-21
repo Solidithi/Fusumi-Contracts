@@ -2,7 +2,6 @@ module fusumi_deployer::fusumi_market {
     use std::error;
     use std::signer;
     use std::string::String;
-    use std::option::{Self, Option};
     use std::table::{Self, Table};
     use aptos_framework::coin;
     use aptos_framework::aptos_coin::AptosCoin;
@@ -66,7 +65,7 @@ module fusumi_deployer::fusumi_market {
         });
     }
 
-    public(friend) fun list_nft(
+    public fun list_nft(
         marketplace_address: address,
         creator: address,
         collection: String,
@@ -113,6 +112,7 @@ module fusumi_deployer::fusumi_market {
 
     public entry fun purchase_nft(
         buyer: &signer,
+        seller: &signer,
         marketplace_address: address,
         creator: address,
         collection: String,
@@ -135,7 +135,7 @@ module fusumi_deployer::fusumi_market {
         coin::deposit(listing.seller, payment_coin);
         coin::deposit(marketplace_address, marketplace_fee_coin);
         fusumi_nft_manager::transfer_nft_ownership(listing.seller, buyer_address, listing.collection_creator);
-        token::transfer(buyer, token_id, buyer_address, 1);
+        token::transfer(seller, token_id, buyer_address, 1);
         event::emit(NFTPurchased {
             token_id,
             seller: listing.seller,
@@ -262,6 +262,6 @@ module fusumi_deployer::fusumi_market {
     #[test_only]
     /// must init for external testing file as init is private fun
     public fun init_for_testing(account: &signer) {
-        initialize(account);
+        initialize(account, 2);
     }
 }

@@ -6,12 +6,11 @@ module fusumi_deployer::debt_root {
     use std::string::{Self, String};
     use std::option::{Self, Option};
     use std::table::{Self, Table};
-    use std::vector;
     use aptos_framework::coin;
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::event;
     use aptos_framework::timestamp;
-    use aptos_token::token::{Self, TokenDataId, TokenId};
+    use aptos_token::token::{Self, TokenDataId};
     use fusumi_deployer::common;
     use fusumi_deployer::dock;
     use fusumi_deployer::stash;
@@ -218,11 +217,14 @@ module fusumi_deployer::debt_root {
         );
 
         let debt_root = table::borrow_mut(&mut registry.debts, root_name);
-        assert!
-        (
-            debt_root.total_shared_percentage + shared_percentage <= 100,
-            error::invalid_argument(common::max_shared_percentage_exceeded())
-        );
+        if (option::is_none(&parent_token_id)) {
+            assert!
+            (
+                debt_root.total_shared_percentage + shared_percentage <= 100,
+                error::invalid_argument(common::max_shared_percentage_exceeded())
+            );
+            debt_root.total_shared_percentage = debt_root.total_shared_percentage + shared_percentage;
+        };
 
         let token_name = string::utf8(b"Debt Token #");
         string::append(&mut token_name, string::utf8(bcs::to_bytes(&debt_root.next_token_id)));
